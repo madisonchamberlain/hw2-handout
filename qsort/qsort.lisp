@@ -1,3 +1,23 @@
+; add all list elements
+(defun sum (list)
+  (reduce '+ list))  
+
+; add 1 for each element in list
+(defun len (list)
+    (cond
+        ; null list; return 0
+        ((null list) 0)
+
+        ; if list has 1 element return 1
+        ((null (cdr list)) 1)
+
+        ; otherwise return 1 + length(rest of list)
+        (t (+ 1 (len(cdr list)))))) 
+
+(defun mean (list)
+  (/ (sum list) (len list))
+)
+
 
 (defun generate_pivot(n list less more)
   (cond
@@ -20,32 +40,39 @@
   (generate_pivot n xs nil nil)
 )
 
+(defun ordered (xs)
+  (cond
+    ; if list is null it is ordered; return T
+    ((null xs) T)
+  
+    ; if the list contails 1 element it is ordered; return T
+    ((null (cdr xs)) T)
+
+    ; if the next element is less than current element; return nul its not ordered
+    ((> (car xs) (car (cdr xs))) nil)
+
+    ; otherwise continue to the next element
+    (T (ordered (cdr xs)))
+  )
+)
+
 
 (defun quicksort (xs)
-  (cond 
-    ; if no list return null
+  (cond
+    ; if list empty return none
     ((null xs) nil)
 
-    ; otherwise recursively quicksort
-    (t
-      ; set n to the first element of xs
-      (setq n (car xs))
-      
-      ; set pivotAnswer to the result from pivot 
-      (setq pivotAnswer (pivot n xs))
+    ; if list already sorted return list
+    ((not (null (ordered xs))) xs)
 
-      ; set lower to the first list returned 
-      (setq lower (car pivotAnswer))
-      
-      ; set upper to the second list returned 
-      (setq upper (car (cdr pivotAnswer)))
-      (append 
-        ; quicksort on the first element of pivots return 
-        (quicksort lower) 
-        ; list containing first element of list and nothing
-        (cons n nil) 
-        ; quicksort on the second element revurned by call to pivot
-        (quicksort upper) 
+    ; if list not already sorted split based on pivot (pivot = mean)
+    (t
+      (append
+        ; quicksort on the lower half
+        (quicksort (car (pivot (mean xs) xs)))
+
+        ; quicksort on the upper half
+        (quicksort (car (cdr (pivot (mean xs) xs))))
       )
     )
   )
